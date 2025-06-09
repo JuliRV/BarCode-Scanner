@@ -49,8 +49,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
     implementation("androidx.compose.material3:material3:1.1.2")
 
-    //ML Kit Barcode Scanner
-    implementation ("com.google.mlkit:barcode-scanning:17.2.0")
+    // ML Kit
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
     //CameraX
     implementation("androidx.camera:camera-camera2:1.4.2")
     implementation("androidx.camera:camera-core:1.4.2")

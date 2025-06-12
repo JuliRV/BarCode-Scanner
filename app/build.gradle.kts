@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin.Companion.findKaptConfiguration
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.barcode_scanner"
+    namespace = "com.example.core"
     compileSdk = 35
 
     defaultConfig {

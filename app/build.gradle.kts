@@ -43,6 +43,13 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            pickFirst("META-INF/LICENSE.md")
+            pickFirst("META-INF/LICENSE-notice.md")
+        }
+    }
 }
 
 dependencies {
@@ -107,4 +114,5 @@ dependencies {
     androidTestImplementation("io.mockk:mockk-android:1.14.2")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(kotlin("test"))
 }

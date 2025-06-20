@@ -1,7 +1,8 @@
-package com.example.barcodescanner.features.barcodehistory.presentation.scanner
+package com.example.barcodescanner.features.barcodehistory.viewmodels
 
 import com.example.scanner.domain.model.BarcodeData
 import com.example.barcodescanner.features.barcodehistory.data.collector.BarcodeCollector
+import com.example.barcodescanner.features.barcodehistory.presentation.scanner.AppScannerViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.verify
 import io.mockk.impl.annotations.MockK

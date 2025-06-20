@@ -1,4 +1,4 @@
-package com.example.barcodescanner.features.barcodehistory
+package com.example.barcodescanner.features.barcodehistory.usecases
 
 import com.example.barcodescanner.features.barcodehistory.data.entities.BarcodeEntity
 import com.example.barcodescanner.features.barcodehistory.domain.repository.BarcodeRepository

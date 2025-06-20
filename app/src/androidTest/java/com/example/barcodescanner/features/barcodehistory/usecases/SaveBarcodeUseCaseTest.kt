@@ -1,6 +1,7 @@
-package com.example.barcodescanner.features.barcodehistory.domain.usecases
+package com.example.barcodescanner.features.barcodehistory.usecases
 
 import com.example.barcodescanner.features.barcodehistory.domain.repository.BarcodeRepository
+import com.example.barcodescanner.features.barcodehistory.domain.usecases.SaveBarcodeUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify

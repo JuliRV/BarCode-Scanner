@@ -1,4 +1,4 @@
-package com.example.barcodescanner.features.barcodehistory
+package com.example.barcodescanner.features.barcodehistory.usecases
 
 import com.example.barcodescanner.features.barcodehistory.domain.repository.BarcodeRepository
 import com.example.barcodescanner.features.barcodehistory.domain.usecases.ClearHistoryUseCase

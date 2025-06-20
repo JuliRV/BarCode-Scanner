@@ -1,4 +1,4 @@
-package com.example.barcodescanner.features.barcodehistory
+package com.example.barcodescanner.features.barcodehistory.repositories
 
 import com.example.barcodescanner.features.barcodehistory.data.dao.BarcodeDao
 import com.example.barcodescanner.features.barcodehistory.data.entities.BarcodeEntity

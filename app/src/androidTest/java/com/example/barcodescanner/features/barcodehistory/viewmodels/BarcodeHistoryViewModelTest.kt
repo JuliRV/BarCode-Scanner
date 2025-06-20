@@ -1,18 +1,17 @@
-package com.example.barcodescanner.features.barcodehistory.presentation.history
+package com.example.barcodescanner.features.barcodehistory.viewmodels
 
 import com.example.barcodescanner.features.barcodehistory.data.entities.BarcodeEntity
 import com.example.barcodescanner.features.barcodehistory.domain.usecases.ClearHistoryUseCase
 import com.example.barcodescanner.features.barcodehistory.domain.usecases.DeleteBarcodeUseCase
 import com.example.barcodescanner.features.barcodehistory.domain.usecases.GetBarcodesUseCase
+import com.example.barcodescanner.features.barcodehistory.presentation.history.BarcodeHistoryViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.util.Date
@@ -95,5 +96,63 @@ class BarcodeDaoTest {
 
         storedBarcodes = barcodeDao.getAllBarcodes().first()
         assertEquals(0, storedBarcodes.size)
+    }
+
+    @Test
+    fun whenInsertDuplicateIdThenLastOneIsKept() = runBlocking {
+        val barcode1 = BarcodeEntity(id = 1, code = "123456789", timestamp = Date(System.currentTimeMillis()))
+        val barcode2 = BarcodeEntity(id = 1, code = "987654321", timestamp = Date(System.currentTimeMillis()))
+
+        barcodeDao.insertBarcode(barcode1)
+        barcodeDao.insertBarcode(barcode2)
+
+        val storedBarcodes = barcodeDao.getAllBarcodes().first()
+        assertEquals(1, storedBarcodes.size)
+        assertEquals("987654321", storedBarcodes.first().code)
+    }
+
+    @Test
+    fun whenGetAllBarcodesThenReturnedInTimestampOrder() = runBlocking {
+        val timestamp1 = Date(System.currentTimeMillis())
+        Thread.sleep(100) // Asegurar diferentes timestamps
+        val timestamp2 = Date(System.currentTimeMillis())
+        Thread.sleep(100)
+        val timestamp3 = Date(System.currentTimeMillis())
+
+        val barcode3 = BarcodeEntity(id = 3, code = "333", timestamp = timestamp3)
+        val barcode1 = BarcodeEntity(id = 1, code = "111", timestamp = timestamp1)
+        val barcode2 = BarcodeEntity(id = 2, code = "222", timestamp = timestamp2)
+
+        // Insertar en orden aleatorio
+        barcodeDao.insertBarcode(barcode2)
+        barcodeDao.insertBarcode(barcode1)
+        barcodeDao.insertBarcode(barcode3)
+
+        val storedBarcodes = barcodeDao.getAllBarcodes().first()
+        assertEquals(3, storedBarcodes.size)
+        // Verificar orden descendente por timestamp
+        assertEquals("333", storedBarcodes[0].code)
+        assertEquals("222", storedBarcodes[1].code)
+        assertEquals("111", storedBarcodes[2].code)
+    }
+
+    @Test
+    fun whenInsertMultipleCodesThenAllAreStored() = runBlocking {
+        val barcodes = (1..5).map {
+            BarcodeEntity(
+                id = it.toLong(),
+                code = "code$it",
+                timestamp = Date(System.currentTimeMillis() + it)
+            )
+        }
+
+        barcodes.forEach { barcodeDao.insertBarcode(it) }
+
+        val storedBarcodes = barcodeDao.getAllBarcodes().first()
+        assertEquals(5, storedBarcodes.size)
+        // Verificar que todos los códigos están almacenados
+        barcodes.forEach { barcode ->
+            assertTrue(storedBarcodes.any { it.code == barcode.code })
+        }
     }
 }

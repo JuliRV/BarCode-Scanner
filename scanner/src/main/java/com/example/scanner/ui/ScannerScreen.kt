@@ -10,16 +10,21 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -31,11 +36,14 @@ import com.example.scanner.domain.model.BarcodeData
 @Composable
 fun ScannerScreen(
     onBack: () -> Unit,
+    onBarcodeScanned: (BarcodeData) -> Unit,
     viewModel: ScannerViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val barcodes by viewModel.barcodeFlow.collectAsState(initial = emptyList())
+    val isAdvancedMode by viewModel.isAdvancedMode.collectAsState()
+    val selectedBarcode by viewModel.selectedBarcode.collectAsState()
 
     var hasCameraPermission by remember {
         mutableStateOf(
@@ -63,40 +71,109 @@ fun ScannerScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
                 onClick = onBack,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(text = "Volver al Menú Principal")
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Text("Modo Avanzado")
+                Switch(
+                    checked = isAdvancedMode,
+                    onCheckedChange = { viewModel.toggleAdvancedMode() }
+                )
             }
         }
 
         if (hasCameraPermission) {
-            CameraPreview(
-                viewModel = viewModel,
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-            )
-
-            // Lista de codigos escaneados
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(16.dp)
             ) {
-                items(barcodes) { barcode ->
-                    Text(
-                        text = "Código: ${barcode.value} (formato: ${barcode.format})",
+                CameraPreview(
+                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (isAdvancedMode && selectedBarcode != null) {
+                    Canvas(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        // Dibujamos un rectángulo en el centro por ahora
+                        // En una implementación más avanzada, usaríamos las coordenadas reales del código
+                        val width = size.width * 0.7f
+                        val height = size.height * 0.2f
+                        val left = (size.width - width) / 2
+                        val top = (size.height - height) / 2
+
+                        drawRect(
+                            color = Color.Green,
+                            topLeft = androidx.compose.ui.geometry.Offset(left, top),
+                            size = androidx.compose.ui.geometry.Size(width, height),
+                            style = Stroke(width = 4f)
+                        )
+                    }
+                }
+            }
+
+            if (isAdvancedMode) {
+                selectedBarcode?.let { barcode ->
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                    )
+                            .padding(16.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        shadowElevation = 4.dp
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = barcode.value,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Button(
+                                onClick = {
+                                    onBarcodeScanned(barcode)
+                                    viewModel.clearSelectedBarcode()
+                                }
+                            ) {
+                                Text("Guardar")
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Lista de códigos escaneados (modo simple)
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(16.dp)
+                ) {
+                    items(barcodes) { barcode ->
+                        Text(
+                            text = "Código: ${barcode.value} (formato: ${barcode.format})",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        )
+                    }
                 }
             }
         } else {

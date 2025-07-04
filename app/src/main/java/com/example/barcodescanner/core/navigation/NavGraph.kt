@@ -41,7 +41,10 @@ fun NavGraph(navController: NavHostController) {
             }
 
             ScannerScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack()},
+                onBarcodeScanned = { barcode ->
+                    appScannerViewModel.saveBarcode(barcode)
+                }
             )
         }
         composable(Routes.HISTORY) {

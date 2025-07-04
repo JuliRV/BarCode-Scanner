@@ -1,8 +1,12 @@
 package com.example.scanner.ui
 
+import android.content.Context.WINDOW_SERVICE
 import android.content.pm.PackageManager
 import android.util.Size
+import android.view.Surface.ROTATION_0
+import android.view.Surface.ROTATION_180
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -228,7 +232,7 @@ private fun CameraPreview(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    val windowManager = remember { context.getSystemService(android.content.Context.WINDOW_SERVICE) as android.view.WindowManager }
+    val windowManager = remember { context.getSystemService(WINDOW_SERVICE) as WindowManager }
 
     Box(modifier = modifier) {
         AndroidView(
@@ -258,7 +262,7 @@ private fun CameraPreview(
                 val imageAnalysis = ImageAnalysis.Builder()
                     .setTargetRotation(rotation)
                     .setTargetResolution(
-                        if (rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_180)
+                        if (rotation == ROTATION_0 || rotation == ROTATION_180)
                             Size(720, 1280)  // Vertical
                         else
                             Size(1280, 720)  // Horizontal

@@ -107,22 +107,48 @@ fun ScannerScreen(
                 )
 
                 if (isAdvancedMode && selectedBarcode != null) {
+                    val context = LocalContext.current
+                    val windowManager = context.getSystemService(android.content.Context.WINDOW_SERVICE) as android.view.WindowManager
+                    val isPortrait = windowManager.defaultDisplay.rotation == android.view.Surface.ROTATION_0 ||
+                            windowManager.defaultDisplay.rotation == android.view.Surface.ROTATION_180
+
                     Canvas(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        // Dibujamos un rectángulo en el centro por ahora
-                        // En una implementación más avanzada, usaríamos las coordenadas reales del código
-                        val width = size.width * 0.7f
-                        val height = size.height * 0.2f
-                        val left = (size.width - width) / 2
-                        val top = (size.height - height) / 2
+                        selectedBarcode?.boundingBox?.let { rect ->
+                            val scaleX: Float
+                            val scaleY: Float
 
-                        drawRect(
-                            color = Color.Green,
-                            topLeft = androidx.compose.ui.geometry.Offset(left, top),
-                            size = androidx.compose.ui.geometry.Size(width, height),
-                            style = Stroke(width = 4f)
-                        )
+                            if (isPortrait) {
+                                scaleX = size.width / 720f
+                                scaleY = size.height / 1280f
+                            } else {
+                                scaleX = size.width / 1280f
+                                scaleY = size.height / 720f
+                            }
+
+                            // Aplicamos la escala a las coordenadas del boundingBox
+                            val left = rect.left * scaleX
+                            val top = rect.top * scaleY
+                            val width = rect.width() * scaleX
+                            val height = rect.height() * scaleY
+
+                            // Aumentamos ligeramente el tamaño del recuadro para mejor visibilidad
+                            val padding = 10f
+
+                            drawRect(
+                                color = Color.Green,
+                                topLeft = androidx.compose.ui.geometry.Offset(
+                                    left - padding,
+                                    top - padding
+                                ),
+                                size = androidx.compose.ui.geometry.Size(
+                                    width + padding * 2,
+                                    height + padding * 2
+                                ),
+                                style = Stroke(width = 4f)
+                            )
+                        }
                     }
                 }
             }
@@ -202,6 +228,7 @@ private fun CameraPreview(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    val windowManager = remember { context.getSystemService(android.content.Context.WINDOW_SERVICE) as android.view.WindowManager }
 
     Box(modifier = modifier) {
         AndroidView(
@@ -220,6 +247,7 @@ private fun CameraPreview(
 
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
+                val rotation = windowManager.defaultDisplay.rotation
 
                 val preview = Preview.Builder()
                     .build()
@@ -228,7 +256,13 @@ private fun CameraPreview(
                     }
 
                 val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(1280, 720))
+                    .setTargetRotation(rotation)
+                    .setTargetResolution(
+                        if (rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_180)
+                            Size(720, 1280)  // Vertical
+                        else
+                            Size(1280, 720)  // Horizontal
+                    )
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
                     .also {

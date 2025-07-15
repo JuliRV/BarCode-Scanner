@@ -105,6 +105,7 @@ class BarcodeAnalyzerTest {
         val expectedBarcode = mockk<Barcode>()
         every { expectedBarcode.rawValue } returns "123456789"
         every { expectedBarcode.format } returns Barcode.FORMAT_QR_CODE
+        every { expectedBarcode.boundingBox } returns null // Agregar esta línea
 
         every { mockScanner.process(any<InputImage>()) } answers {
             val task = Tasks.forResult(listOf(expectedBarcode))
@@ -148,10 +149,12 @@ class BarcodeAnalyzerTest {
             mockk<Barcode> {
                 every { rawValue } returns "123456789"
                 every { format } returns Barcode.FORMAT_QR_CODE
+                every { boundingBox } returns null
             },
             mockk<Barcode> {
                 every { rawValue } returns "987654321"
                 every { format } returns Barcode.FORMAT_CODE_128
+                every { boundingBox } returns null
             }
         )
 

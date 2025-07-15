@@ -1,5 +1,6 @@
 package com.example.scanner.data.analyzer
 
+import android.graphics.Rect
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.example.scanner.data.repository.BarcodeScannerRepositoryImpl
@@ -23,13 +24,41 @@ class BarcodeAnalyzer @Inject constructor(
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
-            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val rotation = imageProxy.imageInfo.rotationDegrees
+            val image = InputImage.fromMediaImage(mediaImage, rotation)
+
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     val barcodeDatas = barcodes.map { barcode ->
+                        val boundingBox = barcode.boundingBox?.let { originalBox ->
+                            when (rotation) {
+                                0 -> originalBox
+                                90 -> Rect(
+                                    originalBox.left,
+                                    originalBox.top,
+                                    originalBox.right,
+                                    originalBox.bottom
+                                )
+                                180 -> Rect(
+                                    mediaImage.width - originalBox.right,
+                                    mediaImage.height - originalBox.bottom,
+                                    mediaImage.width - originalBox.left,
+                                    mediaImage.height - originalBox.top
+                                )
+                                270 -> Rect(
+                                    mediaImage.height - originalBox.bottom,
+                                    originalBox.left,
+                                    mediaImage.height - originalBox.top,
+                                    originalBox.right
+                                )
+                                else -> originalBox
+                            }
+                        }
+
                         BarcodeData(
                             value = barcode.rawValue ?: "",
-                            format = barcode.format
+                            format = barcode.format,
+                            boundingBox = boundingBox
                         )
                     }
                     scope.launch {

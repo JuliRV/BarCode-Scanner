@@ -25,16 +25,20 @@ class ScannerViewModel @Inject constructor(
     private val _selectedBarcode = MutableStateFlow<BarcodeData?>(null)
     val selectedBarcode: StateFlow<BarcodeData?> = _selectedBarcode.asStateFlow()
 
+    private var isProcessingDelete = false
+
     init {
         viewModelScope.launch {
             repository.analyzeImageFlow()
                 .distinctUntilChanged()
                 .collect { barcodes ->
-                    _barcodeFlow.value = barcodes
-                    if (_isAdvancedMode.value && barcodes.isNotEmpty()) {
-                        _selectedBarcode.value = barcodes.firstOrNull()
-                    } else {
-                        _selectedBarcode.value = null
+                    if (!isProcessingDelete) {
+                        _barcodeFlow.value = barcodes
+                        if (_isAdvancedMode.value && barcodes.isNotEmpty()) {
+                            _selectedBarcode.value = barcodes.firstOrNull()
+                        } else {
+                            _selectedBarcode.value = null
+                        }
                     }
                 }
         }
@@ -49,5 +53,13 @@ class ScannerViewModel @Inject constructor(
 
     fun clearSelectedBarcode() {
         _selectedBarcode.value = null
+    }
+
+    fun startDeleteDelay() {
+        viewModelScope.launch {
+            isProcessingDelete = true
+            kotlinx.coroutines.delay(1500) // 1.5 segundos de delay
+            isProcessingDelete = false
+        }
     }
 }

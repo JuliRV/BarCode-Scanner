@@ -17,6 +17,7 @@ class AppScannerViewModelTest {
     @MockK(relaxed = true)
     private lateinit var barcodeCollector: BarcodeCollector
 
+    @MockK(relaxed = true)
     private lateinit var saveBarcodeUseCase: SaveBarcodeUseCase
 
     private lateinit var viewModel: AppScannerViewModel

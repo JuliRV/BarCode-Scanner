@@ -5,9 +5,11 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
 }
+// En tu build.gradle.kts
+apply(from = "${rootProject.projectDir}/app/jacoco.gradle")
 
 android {
-    namespace = "com.example.core"
+    namespace = "com.example.barcodescanner"
     compileSdk = 35
 
     defaultConfig {

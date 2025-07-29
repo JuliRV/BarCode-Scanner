@@ -52,16 +52,22 @@ class BarcodeDaoTest {
 
     @Test
     fun whenGetAllBarcodesThenReturnsAllStoredBarcodes() = runBlocking {
-        val barcode1 = BarcodeEntity(id = 1, code = "123456789", timestamp = Date(System.currentTimeMillis()))
-        val barcode2 = BarcodeEntity(id = 2, code = "987654321", timestamp = Date(System.currentTimeMillis()))
+        // Crear timestamps con diferencia suficiente para garantizar el orden
+        val timestamp1 = Date(System.currentTimeMillis())
+        Thread.sleep(10) // Pequeña pausa para asegurar diferentes timestamps
+        val timestamp2 = Date(System.currentTimeMillis())
+
+        val barcode1 = BarcodeEntity(id = 1, code = "123456789", timestamp = timestamp1)
+        val barcode2 = BarcodeEntity(id = 2, code = "987654321", timestamp = timestamp2)
 
         barcodeDao.insertBarcode(barcode1)
         barcodeDao.insertBarcode(barcode2)
 
         val storedBarcodes = barcodeDao.getAllBarcodes().first()
         assertEquals(2, storedBarcodes.size)
-        assertEquals("123456789", storedBarcodes[0].code)
-        assertEquals("987654321", storedBarcodes[1].code)
+        // El DAO ordena por timestamp DESC, así que el más reciente (barcode2) aparece primero
+        assertEquals("987654321", storedBarcodes[0].code)
+        assertEquals("123456789", storedBarcodes[1].code)
     }
 
     @Test

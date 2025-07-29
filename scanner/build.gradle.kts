@@ -5,6 +5,8 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
 }
+// En tu build.gradle.kts
+apply(from = "../app/jacoco.gradle")
 
 android {
     namespace = "com.example.scanner"

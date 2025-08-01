@@ -181,9 +181,10 @@ fun ScannerScreen(
                                 onClick = {
                                     onBarcodeScanned(barcode)
                                     viewModel.clearSelectedBarcode()
+                                    viewModel.startDeleteDelay()
                                 }
                             ) {
-                                Text("Guardar")
+                                Text("Eliminar")
                             }
                         }
                     }

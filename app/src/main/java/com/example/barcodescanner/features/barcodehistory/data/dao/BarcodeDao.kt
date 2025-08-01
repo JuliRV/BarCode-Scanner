@@ -9,7 +9,7 @@ interface BarcodeDao {
     @Query("SELECT * FROM barcodes ORDER BY timestamp DESC")
     fun getAllBarcodes(): Flow<List<BarcodeEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertBarcode(barcode: BarcodeEntity)
 
     @Query("DELETE FROM barcodes")

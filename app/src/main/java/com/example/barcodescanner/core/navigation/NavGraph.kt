@@ -43,7 +43,7 @@ fun NavGraph(navController: NavHostController) {
             ScannerScreen(
                 onBack = { navController.popBackStack()},
                 onBarcodeScanned = { barcode ->
-                    appScannerViewModel.saveBarcode(barcode)
+                    appScannerViewModel.deleteBarcode(barcode)
                 }
             )
         }

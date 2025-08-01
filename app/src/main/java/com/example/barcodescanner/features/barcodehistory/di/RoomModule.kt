@@ -25,7 +25,7 @@ object RoomModule {
         context,
         BarcodeDatabase::class.java,
         "barcode_database"
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     @Provides
     fun provideBarcodeDao(database: BarcodeDatabase): BarcodeDao = database.barcodeDao()

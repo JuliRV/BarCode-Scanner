@@ -12,7 +12,7 @@ import io.mockk.just
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import java.sql.Date
+import java.util.Date
 
 class DeleteBarcodeUseCaseTest {
 
@@ -30,7 +30,7 @@ class DeleteBarcodeUseCaseTest {
 
     @Test
     fun whenInvokeDeleteBarcodeUseCaseThenCallsDeleteBarcode() = runBlocking {
-        val testBarcode = BarcodeEntity(id=1,code="123456789", timestamp = Date(System.currentTimeMillis()))
+        val testBarcode = BarcodeEntity(id=1, code="123456789", timestamp = Date(System.currentTimeMillis()))
         deleteBarcodeUseCase(testBarcode)
         coVerify { repository.deleteBarcode(testBarcode) }
     }
@@ -38,7 +38,7 @@ class DeleteBarcodeUseCaseTest {
     @Test(expected = Exception::class)
     fun whenInvokeDeleteBarcodeUseCaseWithErrorThenThrowsException() = runBlocking {
         // Simulate an error in the repository
-        val testBarcode = BarcodeEntity(id=2,code="987654321", timestamp = Date(System.currentTimeMillis()))
+        val testBarcode = BarcodeEntity(id=2, code="987654321", timestamp = Date(System.currentTimeMillis()))
         coEvery { repository.deleteBarcode(testBarcode) } throws Exception("Database error")
 
         // Call the use case and expect an exception

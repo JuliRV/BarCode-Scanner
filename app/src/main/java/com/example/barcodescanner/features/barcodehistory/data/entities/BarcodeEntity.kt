@@ -7,6 +7,7 @@ import java.util.Date
 @Entity(tableName = "barcodes")
 data class BarcodeEntity(
     @PrimaryKey
+    val id: Int = 0,
     val code: String,
     val timestamp: Date
 )

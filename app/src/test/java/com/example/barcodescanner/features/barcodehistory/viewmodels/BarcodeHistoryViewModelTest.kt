@@ -19,7 +19,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.sql.Date
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BarcodeHistoryViewModelTest {

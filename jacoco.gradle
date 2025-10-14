@@ -1,0 +1,145 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+// Configurar JaCoCo para los subproyectos que tienen Android
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                buildTypes {
+                    debug {
+                        testCoverageEnabled true
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Nueva tarea para informe combinado de ambos modulos
+tasks.register('combinedJacocoReport', JacocoReport) {
+    group = "Reporting"
+    description = "Genera informe de cobertura JaCoCo combinado para modulos app y scanner."
+
+    // Depender de los tests unitarios de ambos modulos
+    dependsOn ':app:testDebugUnitTest', ':scanner:testDebugUnitTest'
+
+    reports {
+        xml.required = true
+        html.required = true
+        xml.outputLocation = file("${rootProject.layout.buildDirectory.get()}/reports/jacoco/combinedReport/combinedJacocoReport.xml")
+        html.outputLocation = file("${rootProject.layout.buildDirectory.get()}/reports/jacoco/combinedReport/html")
+    }
+
+    // Archivos a excluir - se añaden rutas UI y con 0% de cobertura
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*Test*.*',
+            '**/*Tests.*',
+            '**/databinding/**/*.*',
+            '**/*_Factory*.*',
+            '**/*_HiltModules*.*',
+            '**/*_MembersInjector*.*',
+            '**/*_GeneratedInjector*.*',
+            '**/*Dagger*.*',
+            '**/*Hilt*.*',
+            '**/*ComposableSingletons*.*',
+            '**/*$lambda-*$*.*',
+            '**/META-INF/*.*',
+            '**/*$WhenMappings.*',
+            '**/*$Companion.*',
+            '**/*Module.*',
+            '**/*Component.*',
+            '**/di/**/*.*',
+            '**/injection/**/*.*',
+            // Excluir rutas UI y de presentacion con 0% cobertura
+            '**/ui/**/*.*',
+            '**/presentation/**/*.*',
+            '**/theme/**/*.*',
+            '**/navigation/**/*.*',
+            '**/analyzer/**/*.*',
+            '**/dao/**/*.*',
+            '**/database/**/*.*',
+            '**/home/**/*.*',
+            '**/collector/**/*.*',
+            '**/utils/**/*.*',
+            // Excluir rutas generadas por Hilt y Dagger
+            '**/dagger/hilt/internal/aggregatedroot/codegen/**/*.*',
+            '**/*_HiltComponents*.*',
+            '**/*_Provide*Factory*.*'
+    ]
+
+    // Configurar directorios de clases combinados de ambos modulos
+    def appKotlinClasses = fileTree(dir: "${rootProject.projectDir}/app/build/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def appJavaClasses = fileTree(dir: "${rootProject.projectDir}/app/build/intermediates/javac/debug/classes", excludes: fileFilter)
+    def appAltJavaClasses = fileTree(dir: "${rootProject.projectDir}/app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes", excludes: fileFilter)
+
+    def scannerKotlinClasses = fileTree(dir: "${rootProject.projectDir}/scanner/build/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def scannerJavaClasses = fileTree(dir: "${rootProject.projectDir}/scanner/build/intermediates/javac/debug/classes", excludes: fileFilter)
+    def scannerAltJavaClasses = fileTree(dir: "${rootProject.projectDir}/scanner/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes", excludes: fileFilter)
+
+    classDirectories.setFrom(files([
+        appKotlinClasses, appJavaClasses, appAltJavaClasses,
+        scannerKotlinClasses, scannerJavaClasses, scannerAltJavaClasses
+    ]))
+
+    // Configurar directorios de fuentes combinados
+    sourceDirectories.setFrom(files([
+            "${rootProject.projectDir}/app/src/main/java",
+            "${rootProject.projectDir}/app/src/main/kotlin",
+            "${rootProject.projectDir}/scanner/src/main/java",
+            "${rootProject.projectDir}/scanner/src/main/kotlin"
+    ]))
+
+    // Configurar archivos de ejecucion combinados
+    executionData.setFrom(files([
+            "${rootProject.projectDir}/app/build/jacoco/testDebugUnitTest.exec",
+            "${rootProject.projectDir}/app/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+            "${rootProject.projectDir}/scanner/build/jacoco/testDebugUnitTest.exec",
+            "${rootProject.projectDir}/scanner/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
+    ]))
+
+    doFirst {
+        println "=== INFORME COMBINADO DE COBERTURA ==="
+        println "Generando informe combinado para modulos: app, scanner"
+    }
+
+    doLast {
+        println "=== RESUMEN DEL INFORME COMBINADO ==="
+
+        // Verificar archivos de ejecucion
+        println "Archivos de ejecucion encontrados: ${executionData.files.size()}"
+        executionData.files.each { file ->
+            def moduleName = file.path.contains("/app/") ? "app" : file.path.contains("/scanner/") ? "scanner" : "unknown"
+            println "- [$moduleName] $file (${file.exists() ? 'EXISTE' : 'NO EXISTE'}) - Tamaño: ${file.exists() ? file.length() : 0} bytes"
+        }
+
+        // Verificar directorios de clases
+        println "Directorios de clases configurados: ${classDirectories.files.size()}"
+        classDirectories.files.each { item ->
+            if (item.exists()) {
+                def moduleName = item.path.contains("/app/") ? "app" : item.path.contains("/scanner/") ? "scanner" : "unknown"
+                if (item.isDirectory()) {
+                    def classCount = 0
+                    item.eachFileRecurse { file ->
+                        if (file.isFile() && file.name.endsWith('.class')) classCount++
+                    }
+                    println "- [$moduleName] $item (EXISTE) - Contiene: $classCount clases"
+                } else {
+                    println "- [$moduleName] $item (EXISTE pero es un ARCHIVO, no un directorio)"
+                }
+            } else {
+                def moduleName = item.path.contains("/app/") ? "app" : item.path.contains("/scanner/") ? "scanner" : "unknown"
+                println "- [$moduleName] $item (NO EXISTE)"
+            }
+        }
+
+        println "Informe combinado generado en: ${reports.html.outputLocation.get()}"
+    }
+}

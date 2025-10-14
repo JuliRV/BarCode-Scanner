@@ -4,9 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("jacoco")
 }
-// En tu build.gradle.kts
-apply(from = "${rootProject.projectDir}/app/jacoco.gradle")
 
 android {
     namespace = "com.example.barcodescanner"
@@ -27,6 +26,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(

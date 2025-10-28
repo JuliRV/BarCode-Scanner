@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -70,17 +71,18 @@ fun ScannerScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().testTag("scannerScreen")) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(8.dp)
+                .testTag("topControlsRow"),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
                 onClick = onBack,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).testTag("backButton")
             ) {
                 Text(text = "Volver al Menú Principal")
             }
@@ -89,12 +91,13 @@ fun ScannerScreen(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp).testTag("advancedModeRow")
             ) {
                 Text("Modo Avanzado")
                 Switch(
                     checked = isAdvancedMode,
-                    onCheckedChange = { viewModel.toggleAdvancedMode() }
+                    onCheckedChange = { viewModel.toggleAdvancedMode() },
+                    modifier = Modifier.testTag("advancedModeSwitch")
                 )
             }
         }
@@ -104,6 +107,7 @@ fun ScannerScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .testTag("cameraPreviewBox")
             ) {
                 CameraPreview(
                     viewModel = viewModel,
@@ -117,7 +121,7 @@ fun ScannerScreen(
                             windowManager.defaultDisplay.rotation == android.view.Surface.ROTATION_180
 
                     Canvas(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize().testTag("boundingBoxCanvas")
                     ) {
                         selectedBarcode?.boundingBox?.let { rect ->
                             val scaleX: Float
@@ -131,13 +135,10 @@ fun ScannerScreen(
                                 scaleY = size.height / 720f
                             }
 
-                            // Aplicamos la escala a las coordenadas del boundingBox
                             val left = rect.left * scaleX
                             val top = rect.top * scaleY
                             val width = rect.width() * scaleX
                             val height = rect.height() * scaleY
-
-                            // Aumentamos ligeramente el tamaño del recuadro para mejor visibilidad
                             val padding = 10f
 
                             drawRect(
@@ -162,7 +163,8 @@ fun ScannerScreen(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .testTag("selectedBarcodeCard"),
                         color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 4.dp
                     ) {
@@ -175,14 +177,15 @@ fun ScannerScreen(
                         ) {
                             Text(
                                 text = barcode.value,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f).testTag("selectedBarcodeText")
                             )
                             Button(
                                 onClick = {
                                     onBarcodeScanned(barcode)
                                     viewModel.clearSelectedBarcode()
                                     viewModel.startDeleteDelay()
-                                }
+                                },
+                                modifier = Modifier.testTag("deleteButton")
                             ) {
                                 Text("Eliminar")
                             }
@@ -190,12 +193,12 @@ fun ScannerScreen(
                     }
                 }
             } else {
-                // Lista de códigos escaneados (modo simple)
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
                         .padding(16.dp)
+                        .testTag("barcodeList")
                 ) {
                     items(barcodes) { barcode ->
                         Text(
@@ -203,6 +206,7 @@ fun ScannerScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
+                                .testTag("barcodeItem_${barcode.value}")
                         )
                     }
                 }
@@ -211,21 +215,20 @@ fun ScannerScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black),
+                    .background(Color.Black)
+                    .testTag("permissionDeniedBox"),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "Se necesita permisos de cámara para escanear códigos de barras.",
                     color = Color.White,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp).testTag("permissionDeniedText")
                 )
             }
         }
     }
 }
 
-// This file is part of the Scanner module, which provides a UI for scanning barcodes using the device camera.
-// It is a CameraPreview composable that sets up the camera and an analyzer to process images.
 @Composable
 private fun CameraPreview(
     viewModel: ScannerViewModel,
@@ -264,9 +267,9 @@ private fun CameraPreview(
                     .setTargetRotation(rotation)
                     .setTargetResolution(
                         if (rotation == ROTATION_0 || rotation == ROTATION_180)
-                            Size(720, 1280)  // Vertical
+                            Size(720, 1280)
                         else
-                            Size(1280, 720)  // Horizontal
+                            Size(1280, 720)
                     )
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
@@ -288,39 +291,3 @@ private fun CameraPreview(
         }
     }
 }
-
-
-// Uncomment the following code if you want to display a list of detected barcodes (Hecho arriba de otra forma)
-//
-//@Composable
-//private fun DetectedBarcodesList(barcodes: List<BarcodeData>) {
-//    if (barcodes.isNotEmpty()) {
-//        LazyColumn(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(8.dp)
-//                .height(200.dp)
-//        ) {
-//            items(barcodes) { barcode ->
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 4.dp),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(text = "Valor: ${barcode}", modifier = Modifier.weight(1f))
-//                    Text(text = "Formato: ${barcode.format}",)
-//                }
-//            }
-//        }
-//    } else {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(200.dp),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text(text = "Escanea un codigo de barras para verlo aquí", color = Color.Black)
-//        }
-//    }
-//}

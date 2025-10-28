@@ -140,7 +140,7 @@ class BarcodeDaoTest {
     fun whenInsertMultipleCodesThenAllAreStored() = runBlocking {
         val barcodes = (1..5).map {
             BarcodeEntity(
-                id = it.toLong(),
+                id = it,
                 code = "code$it",
                 timestamp = Date(System.currentTimeMillis() + it)
             )

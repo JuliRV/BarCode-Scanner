@@ -115,4 +115,23 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(kotlin("test"))
+    /// Testing de UI
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+
+// Para Compose UI testing
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.4")
+    androidTestImplementation("androidx.compose.ui:ui-test-manifest:1.5.4")
+
+// Para tests con navegación
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
+
+// Para tests con Hilt
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
+
+// Para idling resources (operaciones asíncronas)
+    androidTestImplementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
 }

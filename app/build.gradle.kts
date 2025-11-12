@@ -4,10 +4,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("jacoco")
 }
 
 android {
-    namespace = "com.example.core"
+    namespace = "com.example.barcodescanner"
     compileSdk = 35
 
     defaultConfig {
@@ -25,6 +26,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -46,8 +50,15 @@ android {
 
     packaging {
         resources {
-            pickFirst("META-INF/LICENSE.md")
-            pickFirst("META-INF/LICENSE-notice.md")
+            pickFirsts.add("META-INF/LICENSE.md")
+            pickFirsts.add("META-INF/LICENSE-notice.md")
+        }
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
         }
     }
 }
@@ -77,6 +88,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     kapt ("androidx.room:room-compiler:2.6.1")
+    kaptTest("androidx.room:room-compiler:2.6.1")
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -112,6 +124,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     testImplementation("io.mockk:mockk:1.14.2")
     androidTestImplementation("io.mockk:mockk-android:1.14.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(kotlin("test"))

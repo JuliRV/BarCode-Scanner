@@ -6,6 +6,8 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.Runs
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -25,6 +27,9 @@ class SaveBarcodeUseCaseTest {
 
     @Test
     fun whenInvokeSaveBarcodeUseCaseThenCallsInsertBarcode() = runBlocking {
+        // Configurar el mock para que responda correctamente
+        coEvery { repository.insertBarcode(any()) } just Runs
+
         val testCode = "123456"
         saveBarcodeUseCase(testCode)
         coVerify { repository.insertBarcode(match { it.code == testCode }) }

@@ -35,12 +35,15 @@ app/
 │       ├── data/       # Capa de datos (Room, DAOs, Entities)
 │       ├── domain/     # Lógica de negocio (UseCases, Repository)
 │       └── presentation/ # UI (ViewModels, Composables)
+|        ...
 └── di/                # Inyección de dependencias
+...
 
 scanner/               # Módulo independiente de escaneo
 ├── data/
 ├── domain/
 └── ui/
+...
 ```
 
 ### 🔧 Tecnologías implementadas
@@ -114,6 +117,8 @@ El proyecto incluye testing en múltiples niveles según los requisitos de las p
 
 // Repository
 - BarcodeRepositoryTest
+
+...
 ```
 
 #### Tests Instrumentados
@@ -122,6 +127,7 @@ El proyecto incluye testing en múltiples niveles según los requisitos de las p
 - ScannerScreenTest
 - BarcodeHistoryScreenTest
 - NavigationTest
+...
 ```
 
 ### 📊 JaCoCo - Informes de Cobertura
@@ -253,7 +259,7 @@ Este proyecto de prácticas permitió trabajar con:
 
 ## 👨‍💻 Autor
 
-**Julián Regueira Varela**
+**Julián Regueira Vilas**
 - GitHub: [@JuliRV](https://github.com/JuliRV)
 - Proyecto desarrollado durante prácticas en **Minsait**
 
@@ -267,7 +273,7 @@ Este proyecto fue desarrollado con fines educativos como parte del programa de p
 
 ## 🙏 Agradecimientos
 
-- **Minsait** por la oportunidad de prácticas y la guía en el desarrollo
+- **Minsait** por la oportunidad de prácticas y la guía en el desarrollo y sobretodo agradecer al equipo que tuve formado por Angel y Jose
 - **Google ML Kit** por las herramientas de escaneo de códigos
 - Comunidad de Android por la documentación y recursos
 

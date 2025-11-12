@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,11 +27,13 @@ fun BarcodeHistoryScreen(
     val barcodes by viewModel.barcodes.collectAsState()
 
     Scaffold(
+        modifier = Modifier.testTag("historyScreen"),
         topBar = {
             TopAppBar(
                 title = { Text("Historial de códigos") },
                 actions = {
-                    IconButton(onClick = { viewModel.clearHistory() }) {
+                    IconButton(onClick = { viewModel.clearHistory() },
+                        modifier = Modifier.testTag("clearHistoryButton")) {
                         Icon(Icons.Default.Delete, contentDescription = "Limpiar historial")
                     }
                 }
@@ -41,16 +44,18 @@ fun BarcodeHistoryScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(paddingValues)
+                    .testTag("emptyStateBox"),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No hay códigos escaneados")
+                Text(text=("No hay códigos escaneados"), modifier = Modifier.testTag("emptyStateText"))
             }
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(paddingValues)
+                    .testTag("barcodeList"),
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(barcodes) { barcode ->
@@ -71,7 +76,7 @@ private fun BarcodeItem(
     onDelete: (BarcodeEntity) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("barcodeItem_${barcode.id}"),
     ) {
         Row(
             modifier = Modifier
@@ -87,16 +92,19 @@ private fun BarcodeItem(
                     text = barcode.code,
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.testTag("barcodeText_${barcode.id}")
                 )
                 Text(
                     text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                         .format(barcode.timestamp),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.testTag("barcodeDate_${barcode.id}")
                 )
             }
-            IconButton(onClick = { onDelete(barcode) }) {
+            IconButton(onClick = { onDelete(barcode) },
+                modifier = Modifier.testTag("deleteButton_${barcode.id}")) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = "Eliminar código",

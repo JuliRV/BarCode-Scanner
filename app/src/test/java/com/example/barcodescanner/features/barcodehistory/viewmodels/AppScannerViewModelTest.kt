@@ -3,7 +3,6 @@ package com.example.barcodescanner.features.barcodehistory.viewmodels
 import com.example.scanner.domain.model.BarcodeData
 import com.example.barcodescanner.features.barcodehistory.data.collector.BarcodeCollector
 import com.example.barcodescanner.features.barcodehistory.domain.usecases.SaveBarcodeUseCase
-import com.example.barcodescanner.features.barcodehistory.domain.usecases.DeleteBarcodeUseCase
 import com.example.barcodescanner.features.barcodehistory.presentation.scanner.AppScannerViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.verify

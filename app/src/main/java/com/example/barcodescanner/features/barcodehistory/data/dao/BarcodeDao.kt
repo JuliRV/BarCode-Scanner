@@ -9,6 +9,9 @@ interface BarcodeDao {
     @Query("SELECT * FROM barcodes ORDER BY timestamp DESC")
     fun getAllBarcodes(): Flow<List<BarcodeEntity>>
 
+    @Query("SELECT * FROM barcodes ORDER BY timestamp DESC")
+    suspend fun getAllBarcodesSnapshot(): List<BarcodeEntity>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertBarcode(barcode: BarcodeEntity)
 
@@ -17,4 +20,10 @@ interface BarcodeDao {
 
     @Delete
     suspend fun deleteBarcode(barcode: BarcodeEntity)
+
+    @Query("DELETE FROM barcodes WHERE timestamp < :cutoffDate")
+    suspend fun deleteBarcodesOlderThan(cutoffDate: Long)
+
+    @Query("SELECT COUNT(*) FROM barcodes WHERE timestamp < :cutoffDate")
+    suspend fun countBarcodesOlderThan(cutoffDate: Long): Int
 }

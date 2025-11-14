@@ -93,10 +93,16 @@ dependencies {
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-compiler:2.48")
+
+    //WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
 
     // Kotlin Metadata
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
@@ -123,6 +129,7 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     testImplementation("io.mockk:mockk:1.14.2")
+    testImplementation("org.robolectric:robolectric:4.11.1")
     androidTestImplementation("io.mockk:mockk-android:1.14.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     debugImplementation(libs.androidx.ui.tooling)
@@ -147,4 +154,8 @@ dependencies {
 
 // Para idling resources (operaciones asíncronas)
     androidTestImplementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
+
+// WorkManager testing
+    testImplementation(libs.androidx.work.testing)
+    androidTestImplementation(libs.androidx.work.testing)
 }

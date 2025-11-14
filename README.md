@@ -16,6 +16,7 @@ Esta aplicación de escaneo de códigos de barras fue desarrollada como proyecto
 - 🎯 **Detección visual** con cuadros de seguimiento en verde
 - 💾 **Historial persistente** de códigos escaneados
 - 🔄 **Dos modos de escaneo**: Simple y Avanzado
+- ⚡ **WorkManager** para tareas en segundo plano (limpieza automática, backups, sincronización)
 - 🧪 **Cobertura de testing** completa con informes JaCoCo
 - 🏗️ **Arquitectura modular** con separación de responsabilidades
 
@@ -61,9 +62,15 @@ scanner/               # Módulo independiente de escaneo
 - **CameraX** - Gestión moderna de la cámara
 - **Canvas Drawing** - Dibujado de cuadros delimitadores en tiempo real
 
+#### Tareas en Segundo Plano
+- **WorkManager** - Tareas persistentes en segundo plano
+- **Hilt Worker** - Inyección de dependencias en Workers
+- **Constraints API** - Optimización de batería y red
+
 #### Testing
 - **JUnit 4** - Tests unitarios
 - **MockK** - Mocking para pruebas
+- **Robolectric** - Testing de Workers con contexto Android
 - **JaCoCo** - Informes de cobertura de código
 - **Espresso** - Tests de UI instrumentados
 - **Compose Testing** - Testing de componentes Jetpack Compose
@@ -94,6 +101,30 @@ Menú de navegación con acceso a:
 - Eliminación individual o masiva
 - Estado vacío con mensaje informativo
 
+### ⚡ WorkManager - Tareas en Segundo Plano
+
+La app implementa WorkManager para gestionar tareas persistentes en segundo plano:
+
+#### 🧹 Limpieza Automática (Periódica - 24h)
+- Elimina códigos con más de 30 días de antigüedad
+- Se ejecuta solo cuando el dispositivo está cargando
+- Requiere conexión a red y batería no baja
+- Optimiza el almacenamiento automáticamente
+
+#### 💾 Backup Automático (Periódico - 7 días)
+- Exporta el historial completo a JSON
+- Solo se ejecuta con WiFi disponible
+- Mantiene los últimos 5 backups
+- Guardado en almacenamiento interno de la app
+
+#### 🔄 Sincronización con Servidor (Manual/On-demand)
+- Sincroniza códigos locales con servidor remoto
+- Implementación mock preparada para backend real
+- Reporta progreso y resultados en tiempo real
+- Requiere conexión WiFi
+
+**📖 Documentación completa**: Ver `WORKMANAGER_GUIDE.md` para detalles de implementación y uso.
+
 ---
 
 ## 🧪 Testing y Calidad
@@ -117,6 +148,11 @@ El proyecto incluye testing en múltiples niveles según los requisitos de las p
 
 // Repository
 - BarcodeRepositoryTest
+
+// Workers (WorkManager)
+- CleanupOldBarcodesWorkerTest
+- BackupBarcodesWorkerTest
+- SyncBarcodesToServerWorkerTest
 
 ...
 ```
@@ -216,9 +252,15 @@ implementation("androidx.camera:camera-camera2")
 implementation("androidx.camera:camera-lifecycle")
 implementation("androidx.camera:camera-view")
 
+// WorkManager
+implementation("androidx.work:work-runtime-ktx")
+implementation("androidx.hilt:hilt-work")
+
 // Testing
 testImplementation("junit:junit")
 testImplementation("io.mockk:mockk")
+testImplementation("org.robolectric:robolectric")
+testImplementation("androidx.work:work-testing")
 androidTestImplementation("androidx.test.espresso:espresso-core")
 androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 ```
@@ -254,6 +296,13 @@ Este proyecto de prácticas permitió trabajar con:
 - ✅ Patrón Repository
 - ✅ Use Cases para lógica de negocio
 - ✅ Jetpack Compose para UI declarativa
+
+### ⚡ Tareas en Segundo Plano
+- ✅ WorkManager para tareas persistentes
+- ✅ Workers periódicos y únicos (OneTime)
+- ✅ Constraints para optimización de batería y red
+- ✅ Integración de HiltWorkerFactory
+- ✅ Testing de Workers con WorkManagerTestInitHelper
 
 ---
 

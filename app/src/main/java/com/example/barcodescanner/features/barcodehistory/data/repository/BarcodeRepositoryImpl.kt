@@ -13,9 +13,18 @@ class BarcodeRepositoryImpl @Inject constructor(
 ) : BarcodeRepository {
     override fun getAllBarcodes(): Flow<List<BarcodeEntity>> = barcodeDao.getAllBarcodes()
 
+    override suspend fun getAllBarcodesSnapshot(): List<BarcodeEntity> = 
+        barcodeDao.getAllBarcodesSnapshot()
+
     override suspend fun insertBarcode(barcode: BarcodeEntity) = barcodeDao.insertBarcode(barcode)
 
     override suspend fun deleteAllBarcodes() = barcodeDao.deleteAllBarcodes()
 
     override suspend fun deleteBarcode(barcode: BarcodeEntity) = barcodeDao.deleteBarcode(barcode)
+
+    override suspend fun deleteBarcodesOlderThan(cutoffDate: Long) = 
+        barcodeDao.deleteBarcodesOlderThan(cutoffDate)
+
+    override suspend fun countBarcodesOlderThan(cutoffDate: Long): Int = 
+        barcodeDao.countBarcodesOlderThan(cutoffDate)
 }

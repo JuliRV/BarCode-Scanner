@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.core.R
+import com.example.barcodescanner.R
 
 class EspressoTestActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
